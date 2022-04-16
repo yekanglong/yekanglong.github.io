@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>Intro to MapView - Create a 2D map</title>
+    <style>
+        html,
+        body,
+        #viewDiv {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+        }
+        
+        body {
+            position: relative;
+        }
+        
+        .yeMei {
+            box-sizing: border-box;
+            height: 70px;
+            width: 100%;
+            background-color: rgba(0, 255, 0, 16);
+            font-size: 60px;
+            color: rgb(255, 0, 64);
+            padding-left: 650px;
+        }
+        
+        #basemapGalleryDiv {
+            position: absolute;
+            top: 70px;
+            left: 85%;
+            height: 100%;
+            width: 200px;
+            z-index: 1;
+        }
+        
+        #other {
+            position: absolute;
+            z-index: 1;
+            left: 62%;
+            top: 70%;
+        }
+        
+        #final {
+            height: 350px;
+            position: absolute;
+            z-index: 1;
+            left: 67%;
+            top: 70px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://js.arcgis.com/4.23/esri/themes/light/main.css" />
+    <script src="https://js.arcgis.com/4.23/"></script>
+    <script>
+        require(["esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/widgets/BasemapGallery",
+                "esri/widgets/Legend", "esri/widgets/LayerList", "esri/widgets/ScaleBar", "esri/widgets/Search", "esri/widgets/Editor", "esri/widgets/Print"
+            ],
+            (Map, MapView, FeatureLayer, BasemapGallery, Legend, LayerList, ScaleBar, Search, Editor, Print) => {
+                const map = new Map({
+                    basemap: "streets-relief-vector",
+                    //layers:[featureLayer]
+                });
+                const view = new MapView({
+                    container: "viewDiv", // Reference to the view div created in step 5
+                    map: map, // Reference to the map object created before the view
+                    zoom: 10, // Sets zoom level based on level of detail (LOD)
+                    center: [119.28, 26.08] // longitude, latitude
+                });
+                const featureLayer = new FeatureLayer({
+                    url: "https://www.geosceneonline.cn/geoscene/apps/Editor/index.html?appid=9c37ea464b5b4e92958190bedff500c1",
+                    title: "福州的美食分享",
+                    popupTemplate: {
+                        title: "福州的美食分享",
+                        lastEditInfoEnabled: false,
+                        content: [{
+                            type: "fields",
+                            fieldInfos: [{
+                                    fieldName: "name"
+                                },
+
+                                {
+                                    fieldName: "type"
+                                }
+
+                            ]
+                        }]
+                    }
+
+                });
+
+                map.add(featureLayer);
+
+                const featureLayer2 = new FeatureLayer({
+                    url: "http://www.geosceneonline.cn/geoscene/apps/MapTour/index.html?appid=d00db01cab2d40f086e79b9ca5362ae7",
+                    title: "福州的景点",
+                    popupTemplate: {
+                        title: "福州的景点",
+                        lastEditInfoEnabled: false,
+                        content: [{
+                            type: "fields",
+                            fieldInfos: [{
+                                    fieldName: "name"
+                                },
+
+                                {
+                                    fieldName: "type"
+                                }
+
+                            ]
+                        }]
+                    }
+
+                });
+
+                map.add(featureLayer2);
+                const basemapGallery = new BasemapGallery({
+                    view: view,
+                    container: basemapGalleryDiv
+                });
+
+                const legend = new Legend({
+                    view: view,
+                    container: "other",
+                    layerInfos: [{
+                        layer: featureLayer,
+                        title: "福州的景点"
+
+                    }]
+
+                });
+
+                // view.ui.add(legend, "bottom-right");
+
+                const layerList = new LayerList({
+                    view: view
+
+
+                });
+                // Adds widget below other elements in the top left corner of the view
+                view.ui.add(layerList, {
+                    position: "top-left"
+                });
+                var scaleBar = new ScaleBar({
+                    view: view,
+                    style: "ruler"
+                });
+                // Add widget to the bottom left corner of the view
+                view.ui.add(scaleBar, {
+                    position: "bottom-left"
+                });
+                const searchWidget = new Search({
+                    view: view
+                });
+                // Adds the search widget below other elements in
+                // the top left corner of the view
+                view.ui.add(searchWidget, {
+                    position: "top-left",
+                    index: 2
+                });
+                // At the very minimum, set the Editor's view
+                const editor = new Editor({
+                    view: view
+                });
+
+                view.ui.add(editor, "top-left");
+                const print = new Print({
+                    view: view,
+                    container: "final",
+                    // specify your own print service
+                    printServiceUrl: "https://utility.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task"
+                });
+
+                // Adds widget below other elements in the top left corner of the view
+                // view.ui.add(print, {
+                //   position: "top-right"
+                // });
+
+            });
+    </script>
+</head>
+
+<body>
+    <div id="basemapGalleryDiv"></div>
+    <div class="yeMei">多彩福州</div>
+    <div id="viewDiv"></div>
+    <div id="other"></div>
+    <div id="final"></div>
+</body>
+
+</html>
